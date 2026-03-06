@@ -1,0 +1,64 @@
+<?php
+
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DepartementController;
+use App\Http\Controllers\Admin\FiliereController;
+use App\Http\Controllers\Admin\EnseignantController;
+use App\Http\Controllers\Admin\EtudiantController;
+use App\Http\Controllers\Admin\MatiereController;
+use App\Http\Controllers\Admin\PeriodeEvaluationController;
+use App\Http\Controllers\Admin\CritereController;
+use App\Http\Controllers\Etudiant\EvaluationController as EtudiantEvaluationController;
+use App\Http\Controllers\Enseignant\DashboardController as EnseignantDashboardController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// Redirection vers le dashboard approprié selon le rôle
+Route::get('/dashboard', function () {
+    if (auth()->user()->isAdmin()) {
+        return redirect()->route('admin.dashboard');
+    } elseif (auth()->user()->isEnseignant()) {
+        return redirect()->route('enseignant.dashboard');
+    }
+    return redirect()->route('etudiant.dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Routes Admin
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', DashboardController::class)->name('dashboard');
+    Route::resource('departements', DepartementController::class);
+    Route::resource('filieres', FiliereController::class);
+    Route::resource('enseignants', EnseignantController::class);
+    Route::resource('etudiants', EtudiantController::class);
+    Route::resource('matieres', MatiereController::class);
+    Route::resource('periodes', PeriodeEvaluationController::class);
+    Route::resource('criteres', CritereController::class);
+});
+
+// Routes Enseignant
+Route::middleware(['auth', 'enseignant'])->prefix('enseignant')->name('enseignant.')->group(function () {
+    Route::get('/', [EnseignantDashboardController::class, '__invoke'])->name('dashboard');
+});
+
+// Routes Étudiant
+Route::middleware(['auth', 'etudiant'])->prefix('etudiant')->name('etudiant.')->group(function () {
+    Route::get('/', function () {
+        return view('etudiant.dashboard');
+    })->name('dashboard');
+    Route::get('/evaluer', [EtudiantEvaluationController::class, 'index'])->name('evaluations.index');
+    Route::get('/evaluer/{enseignant}/{matiere}', [EtudiantEvaluationController::class, 'create'])->name('evaluations.create');
+    Route::post('/evaluer/{enseignant}/{matiere}', [EtudiantEvaluationController::class, 'store'])->name('evaluations.store');
+    Route::get('/mes-evaluations', [EtudiantEvaluationController::class, 'historique'])->name('evaluations.historique');
+});
+
+require __DIR__.'/auth.php';
