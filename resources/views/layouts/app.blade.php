@@ -1,36 +1,70 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html
+    lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+    x-data="themeSwitcher()"
+    x-init="init()"
+    :class="{ dark: isDark }"
+>
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="csrf-token" content="{{ csrf_token() }}" />
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ $title ?? config('app.name', 'Evaluation enseignants') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+    <body class="bg-app font-sans antialiased text-foreground">
+        <div class="flex min-h-screen">
+            <x-layout.sidebar :items="$sidebarItems ?? []" />
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+            <div class="flex min-h-screen flex-1 flex-col">
+                <header
+                    class="flex items-center justify-between border-b border-borderColor/60 bg-surface/80 px-6 py-3 backdrop-blur-sm"
+                >
+                    <div class="flex flex-col gap-1">
+                        <span class="text-xs font-medium uppercase tracking-[0.16em] text-muted">
+                            {{ $section ?? 'Vue globale' }}
+                        </span>
+                        <span class="text-sm font-medium text-foreground">
+                            {{ $pageTitle ?? ($header ?? 'Dashboard') }}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <button
+                            type="button"
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-muted/80"
+                            @click="toggle()"
+                        >
+                            <template x-if="!isDark">
+                                <x-lucide-moon class="h-4 w-4" />
+                            </template>
+                            <template x-if="isDark">
+                                <x-lucide-sun-medium class="h-4 w-4" />
+                            </template>
+                        </button>
+
+                        {{-- Placeholder notifications + avatar à raffiner ensuite --}}
+                        <button
+                            type="button"
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-muted/80"
+                        >
+                            <x-lucide-bell class="h-4 w-4" />
+                        </button>
+
+                        <div
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-surface-muted text-xs font-medium text-foreground"
+                        >
+                            {{ strtoupper(mb_substr(auth()->user()->name ?? 'User', 0, 2)) }}
+                        </div>
                     </div>
                 </header>
-            @endisset
 
-            <!-- Page Content -->
-            <main>
-                {{ $slot }}
-            </main>
+                <main class="container py-8">
+                    {{ $slot }}
+                </main>
+            </div>
         </div>
     </body>
 </html>

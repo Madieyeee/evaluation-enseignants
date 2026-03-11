@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DepartementController;
 use App\Http\Controllers\Admin\FiliereController;
+use App\Http\Controllers\Admin\ExportController;
 use App\Http\Controllers\Admin\EnseignantController;
 use App\Http\Controllers\Admin\EtudiantController;
 use App\Http\Controllers\Admin\MatiereController;
@@ -43,6 +44,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('matieres', MatiereController::class);
     Route::resource('periodes', PeriodeEvaluationController::class);
     Route::resource('criteres', CritereController::class);
+
+    // Exports PDF
+    Route::get('/exports/enseignants/pdf', [ExportController::class, 'enseignantsPdf'])->name('exports.enseignants.pdf');
+    Route::get('/exports/etudiants/pdf', [ExportController::class, 'etudiantsPdf'])->name('exports.etudiants.pdf');
+    Route::get('/exports/evaluations/pdf', [ExportController::class, 'evaluationsPdf'])->name('exports.evaluations.pdf');
+
+    // Exports Excel
+    Route::get('/exports/enseignants/excel', [ExportController::class, 'enseignantsExcel'])->name('exports.enseignants.excel');
+    Route::get('/exports/etudiants/excel', [ExportController::class, 'etudiantsExcel'])->name('exports.etudiants.excel');
+    Route::get('/exports/evaluations/excel', [ExportController::class, 'evaluationsExcel'])->name('exports.evaluations.excel');
 });
 
 // Routes Enseignant

@@ -1,69 +1,142 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tableau de bord Enseignant</h2>
+        <h2 class="text-sm font-medium text-muted">
+            Tableau de bord Enseignant
+        </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-6">
-                <h3 class="text-lg font-semibold mb-2">Bienvenue, {{ auth()->user()->name }} !</h3>
-                <p class="text-gray-600">Département: {{ $enseignant->departement?->nom ?? 'Non assigné' }}</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold mb-4">Statistiques</h3>
-                    <p><strong>Matières enseignées:</strong> {{ $enseignant->matieres->count() }}</p>
-                    <p><strong>Évaluations reçues:</strong> {{ $enseignant->evaluations->count() }}</p>
-                    <p><strong>Moyenne globale:</strong> 
-                        <span class="font-bold text-lg {{ $enseignant->moyenne >= 4 ? 'text-green-600' : ($enseignant->moyenne >= 3 ? 'text-yellow-600' : 'text-red-600') }}">
-                            {{ number_format($enseignant->moyenne, 2) }}/5
+    <div class="space-y-8">
+        <x-ui.card class="p-6">
+            <div class="flex items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-sm font-semibold text-foreground">
+                        Bienvenue, {{ auth()->user()->name }} !
+                    </h3>
+                    <p class="mt-2 text-sm text-muted">
+                        Département :
+                        <span class="font-medium text-foreground">
+                            {{ $enseignant->departement?->nom ?? 'Non assigné' }}
                         </span>
                     </p>
                 </div>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold mb-4">Moyenne par critère</h3>
-                    @foreach($moyenneParCritere as $critere => $moyenne)
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm">{{ $critere }}</span>
-                            <span class="font-bold {{ $moyenne >= 4 ? 'text-green-600' : ($moyenne >= 3 ? 'text-yellow-600' : 'text-red-600') }}">
+            </div>
+        </x-ui.card>
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <x-ui.card class="p-6">
+                <h3 class="text-sm font-semibold text-foreground">
+                    Statistiques
+                </h3>
+                <dl class="mt-4 space-y-3 text-sm">
+                    <div class="flex items-center justify-between">
+                        <dt class="text-muted">Matières enseignées</dt>
+                        <dd class="font-semibold text-foreground">
+                            {{ $enseignant->matieres->count() }}
+                        </dd>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <dt class="text-muted">Évaluations reçues</dt>
+                        <dd class="font-semibold text-foreground">
+                            {{ $enseignant->evaluations->count() }}
+                        </dd>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <dt class="text-muted">Moyenne globale</dt>
+                        <dd>
+                            @php
+                                $moyenneClass =
+                                    $enseignant->moyenne >= 4
+                                        ? 'text-success'
+                                        : ($enseignant->moyenne >= 3 ? 'text-amber-500' : 'text-danger');
+                            @endphp
+                            <span class="text-lg font-semibold {{ $moyenneClass }}">
+                                {{ number_format($enseignant->moyenne, 2) }}/5
+                            </span>
+                        </dd>
+                    </div>
+                </dl>
+            </x-ui.card>
+
+            <x-ui.card class="p-6">
+                <h3 class="text-sm font-semibold text-foreground">
+                    Moyenne par critère
+                </h3>
+                <div class="mt-4 space-y-2">
+                    @foreach ($moyenneParCritere as $critere => $moyenne)
+                        @php
+                            $moyenneClass =
+                                $moyenne >= 4
+                                    ? 'text-success'
+                                    : ($moyenne >= 3
+                                        ? 'text-amber-500'
+                                        : 'text-danger');
+                        @endphp
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-muted">
+                                {{ $critere }}
+                            </span>
+                            <span class="font-semibold {{ $moyenneClass }}">
                                 {{ number_format($moyenne, 2) }}/5
                             </span>
                         </div>
                     @endforeach
                 </div>
-            </div>
+            </x-ui.card>
+        </div>
 
-            @if($evaluations->count() > 0)
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold mb-4">Évaluations récentes</h3>
-                    <table class="min-w-full">
-                        <thead>
-                            <tr class="border-b">
-                                <th class="text-left py-2 px-4">Date</th>
-                                <th class="text-left py-2 px-4">Matière</th>
-                                <th class="text-left py-2 px-4">Moyenne</th>
-                                <th class="text-left py-2 px-4">Commentaire</th>
+        @if ($evaluations->count() > 0)
+            <x-ui.card class="p-0">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <h3 class="text-sm font-semibold text-foreground">
+                        Évaluations récentes
+                    </h3>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full border-t border-borderColor/40 text-sm">
+                        <thead class="bg-surface-muted/60 text-xs uppercase tracking-wide text-muted">
+                            <tr>
+                                <th class="px-4 py-2 text-left">Date</th>
+                                <th class="px-4 py-2 text-left">Matière</th>
+                                <th class="px-4 py-2 text-left">Moyenne</th>
+                                <th class="px-4 py-2 text-left">Commentaire</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($evaluations as $evaluation)
-                                <tr class="border-b">
-                                    <td class="py-2 px-4">{{ $evaluation->created_at->format('d/m/Y') }}</td>
-                                    <td class="py-2 px-4">{{ $evaluation->matiere->nom }}</td>
-                                    <td class="py-2 px-4">
-                                        <span class="font-bold {{ $evaluation->moyenne >= 4 ? 'text-green-600' : ($evaluation->moyenne >= 3 ? 'text-yellow-600' : 'text-red-600') }}">
+                            @foreach ($evaluations as $evaluation)
+                                @php
+                                    $moyenneClass =
+                                        $evaluation->moyenne >= 4
+                                            ? 'text-success'
+                                            : ($evaluation->moyenne >= 3
+                                                ? 'text-amber-500'
+                                                : 'text-danger');
+                                @endphp
+                                <tr class="border-t border-borderColor/30">
+                                    <td class="px-4 py-2 text-sm text-muted">
+                                        {{ $evaluation->created_at->format('d/m/Y') }}
+                                    </td>
+                                    <td class="px-4 py-2 text-sm text-foreground">
+                                        {{ $evaluation->matiere->nom }}
+                                    </td>
+                                    <td class="px-4 py-2">
+                                        <span class="text-sm font-semibold {{ $moyenneClass }}">
                                             {{ number_format($evaluation->moyenne, 2) }}/5
                                         </span>
                                     </td>
-                                    <td class="py-2 px-4">{{ $evaluation->commentaire_general ?? '-' }}</td>
+                                    <td class="px-4 py-2 text-sm text-muted">
+                                        {{ $evaluation->commentaire_general ?? '-' }}
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                <div class="border-t border-borderColor/40 px-6 py-3">
                     {{ $evaluations->links() }}
                 </div>
-            @endif
-        </div>
+            </x-ui.card>
+        @endif
     </div>
 </x-app-layout>

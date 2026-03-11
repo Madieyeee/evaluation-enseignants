@@ -1,3 +1,120 @@
+@import "@fontsource-variable/inter/index.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+    /* Light theme tokens (neutres froids + accent indigo) */
+    --color-bg: 248 250 252; /* slate-50 */
+    --color-fg: 15 23 42; /* slate-900 */
+
+    --color-surface: 255 255 255; /* white */
+    --color-surface-muted: 241 245 249; /* slate-100 */
+    --color-border: 226 232 240; /* slate-200 */
+
+    --color-muted: 100 116 139; /* slate-500 */
+
+    --color-accent: 79 70 229; /* indigo-600 */
+    --color-accent-soft: 224 231 255; /* indigo-100 */
+    --color-accent-foreground: 248 250 252; /* slate-50 */
+
+    --color-danger: 239 68 68; /* red-500 */
+    --color-success: 16 185 129; /* emerald-500 */
+
+    --radius-lg: 0.75rem; /* 12px */
+    --radius-xl: 1rem; /* 16px */
+
+    --shadow-subtle: 0 10px 30px -24px rgba(15, 23, 42, 0.45);
+}
+
+.dark {
+    --color-bg: 15 23 42; /* slate-900 */
+    --color-fg: 226 232 240; /* slate-200 */
+
+    --color-surface: 15 23 42; /* slate-900 */
+    --color-surface-muted: 15 23 42; /* proche bg pour effet "flat" */
+    --color-border: 30 41 59; /* slate-800 */
+
+    --color-muted: 148 163 184; /* slate-400 */
+
+    --color-accent: 129 140 248; /* indigo-400/500 */
+    --color-accent-soft: 30 64 175; /* indigo-800 */
+    --color-accent-foreground: 15 23 42; /* slate-900 */
+
+    --color-danger: 248 113 113; /* red-400 */
+    --color-success: 45 212 191; /* emerald-400 */
+}
+
+@layer base {
+    *,
+    *::before,
+    *::after {
+        @apply border-borderColor;
+    }
+
+    html {
+        @apply antialiased;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        font-family: 'InterVariable', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    ::selection {
+        background-color: rgb(var(--color-accent) / 0.12);
+    }
+}
+
+@layer components {
+    .card {
+        @apply bg-surface border border-borderColor/60 rounded-xl shadow-sm transition-transform duration-200 ease-soft-out;
+    }
+
+    .card-interactive {
+        @apply hover:-translate-y-0.5 hover:shadow-subtle hover:bg-surfaceMuted/40;
+    }
+
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition duration-200 ease-soft-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent bg-transparent border border-transparent disabled:cursor-not-allowed disabled:opacity-60;
+    }
+
+    .btn-primary {
+        @apply btn bg-accent text-accent-foreground shadow-sm hover:bg-accent/90 hover:-translate-y-0.5;
+    }
+
+    .btn-secondary {
+        @apply btn bg-surfaceMuted text-foreground border-borderColor/60 hover:bg-surface hover:-translate-y-0.5;
+    }
+
+    .btn-ghost {
+        @apply btn text-muted hover:bg-surfaceMuted/80;
+    }
+
+    .input {
+        @apply block w-full rounded-lg border border-borderColor/70 bg-surface px-3 py-2 text-sm text-foreground shadow-sm placeholder:text-muted/70 focus:border-accent focus:ring-2 focus:ring-accent/50 focus:ring-offset-0;
+    }
+
+    .badge-soft {
+        @apply inline-flex items-center gap-1 rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent;
+    }
+}
+
+@layer utilities {
+    .bg-app {
+        background-color: rgb(var(--color-bg));
+    }
+
+    .bg-surface {
+        background-color: rgb(var(--color-surface));
+    }
+
+    .bg-surface-muted {
+        background-color: rgb(var(--color-surface-muted));
+    }
+
+    .border-borderColor {
+        border-color: rgb(var(--color-border));
+    }
+}

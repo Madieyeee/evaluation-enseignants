@@ -1,88 +1,162 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Tableau de bord Administrateur
+        <h2 class="text-sm font-medium text-muted">
+            Tableau de bord administrateur
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Messages flash -->
-            @if(session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
-                    {{ session('success') }}
-                </div>
-            @endif
+    <div class="space-y-8">
+        {{-- Messages flash --}}
+        @if (session('success'))
+            <x-ui.card class="border border-success/20 bg-success/5 text-success text-sm">
+                {{ session('success') }}
+            </x-ui.card>
+        @endif
 
-            <!-- Statistiques -->
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-3xl font-bold text-blue-600">{{ $stats['enseignants'] }}</div>
-                    <div class="text-gray-600">Enseignants</div>
-                </div>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-3xl font-bold text-green-600">{{ $stats['etudiants'] }}</div>
-                    <div class="text-gray-600">Étudiants</div>
-                </div>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-3xl font-bold text-purple-600">{{ $stats['matieres'] }}</div>
-                    <div class="text-gray-600">Matières</div>
-                </div>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-3xl font-bold text-orange-600">{{ $stats['evaluations'] }}</div>
-                    <div class="text-gray-600">Évaluations</div>
-                </div>
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <div class="text-3xl font-bold text-indigo-600">{{ $stats['departements'] }}</div>
-                    <div class="text-gray-600">Départements</div>
-                </div>
-            </div>
+        {{-- Statistiques principales --}}
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-5">
+            <x-ui.card interactive class="p-5">
+                <p class="text-xs font-medium uppercase tracking-[0.16em] text-muted">
+                    Enseignants
+                </p>
+                <p class="mt-2 text-2xl font-semibold">
+                    {{ $stats['enseignants'] }}
+                </p>
+            </x-ui.card>
 
-            <!-- Période active -->
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-8">
-                <h3 class="text-lg font-semibold mb-4">Période d'évaluation active</h3>
-                @if($periodeActive)
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <span class="font-medium">{{ $periodeActive->nom }}</span>
-                            <span class="text-gray-600 ml-2">
-                                ({{ $periodeActive->date_debut->format('d/m/Y') }} - {{ $periodeActive->date_fin->format('d/m/Y') }})
-                            </span>
-                        </div>
-                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Active</span>
+            <x-ui.card interactive class="p-5">
+                <p class="text-xs font-medium uppercase tracking-[0.16em] text-muted">
+                    Étudiants
+                </p>
+                <p class="mt-2 text-2xl font-semibold">
+                    {{ $stats['etudiants'] }}
+                </p>
+            </x-ui.card>
+
+            <x-ui.card interactive class="p-5">
+                <p class="text-xs font-medium uppercase tracking-[0.16em] text-muted">
+                    Matières
+                </p>
+                <p class="mt-2 text-2xl font-semibold">
+                    {{ $stats['matieres'] }}
+                </p>
+            </x-ui.card>
+
+            <x-ui.card interactive class="p-5">
+                <p class="text-xs font-medium uppercase tracking-[0.16em] text-muted">
+                    Évaluations
+                </p>
+                <p class="mt-2 text-2xl font-semibold">
+                    {{ $stats['evaluations'] }}
+                </p>
+            </x-ui.card>
+
+            <x-ui.card interactive class="p-5">
+                <p class="text-xs font-medium uppercase tracking-[0.16em] text-muted">
+                    Départements
+                </p>
+                <p class="mt-2 text-2xl font-semibold">
+                    {{ $stats['departements'] }}
+                </p>
+            </x-ui.card>
+        </div>
+
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {{-- Période active --}}
+            <x-ui.card class="p-6 lg:col-span-1">
+                <div class="flex items-start justify-between gap-4">
+                    <div>
+                        <h3 class="text-sm font-semibold text-foreground">
+                            Période d'évaluation active
+                        </h3>
+
+                        @if ($periodeActive)
+                            <p class="mt-3 text-sm text-muted">
+                                <span class="font-medium text-foreground">{{ $periodeActive->nom }}</span>
+                                <span class="ml-1">
+                                    ({{ $periodeActive->date_debut->format('d/m/Y') }}
+                                    –
+                                    {{ $periodeActive->date_fin->format('d/m/Y') }})
+                                </span>
+                            </p>
+                        @else
+                            <p class="mt-3 text-sm text-muted">
+                                Aucune période d'évaluation active.
+                            </p>
+                        @endif
                     </div>
-                @else
-                    <p class="text-gray-500">Aucune période d'évaluation active.</p>
-                    <a href="{{ route('admin.periodes.create') }}" class="mt-2 inline-block text-blue-600 hover:underline">
-                        Créer une période d'évaluation
-                    </a>
-                @endif
-            </div>
 
-            <!-- Top enseignants -->
-            @if($topEnseignants->count() > 0)
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    <h3 class="text-lg font-semibold mb-4">Top 5 des enseignants les mieux notés</h3>
+                    @if ($periodeActive)
+                        <span
+                            class="inline-flex items-center rounded-full bg-success/10 px-3 py-1 text-xs font-medium text-success"
+                        >
+                            Active
+                        </span>
+                    @endif
+                </div>
+
+                @unless ($periodeActive)
+                    <div class="mt-4">
+                        <x-ui.button
+                            as="a"
+                            href="{{ route('admin.periodes.create') }}"
+                            variant="primary"
+                            size="sm"
+                            icon="calendar-plus"
+                        >
+                            Créer une période d'évaluation
+                        </x-ui.button>
+                    </div>
+                @endunless
+            </x-ui.card>
+
+            {{-- Top enseignants --}}
+            @if ($topEnseignants->count() > 0)
+                <x-ui.card class="p-0 lg:col-span-2">
+                    <div class="flex items-center justify-between px-6 py-4">
+                        <h3 class="text-sm font-semibold text-foreground">
+                            Top 5 des enseignants les mieux notés
+                        </h3>
+                    </div>
+
                     <div class="overflow-x-auto">
-                        <table class="min-w-full">
-                            <thead>
-                                <tr class="border-b">
-                                    <th class="text-left py-2 px-4">Rang</th>
-                                    <th class="text-left py-2 px-4">Enseignant</th>
-                                    <th class="text-left py-2 px-4">Département</th>
-                                    <th class="text-left py-2 px-4">Évaluations</th>
-                                    <th class="text-left py-2 px-4">Moyenne</th>
+                        <table class="w-full border-t border-borderColor/40 text-sm">
+                            <thead class="bg-surface-muted/60 text-xs uppercase tracking-wide text-muted">
+                                <tr>
+                                    <th class="px-4 py-2 text-left">Rang</th>
+                                    <th class="px-4 py-2 text-left">Enseignant</th>
+                                    <th class="px-4 py-2 text-left">Département</th>
+                                    <th class="px-4 py-2 text-left">Évaluations</th>
+                                    <th class="px-4 py-2 text-left">Moyenne</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($topEnseignants as $index => $enseignant)
-                                    <tr class="border-b">
-                                        <td class="py-2 px-4">{{ $index + 1 }}</td>
-                                        <td class="py-2 px-4">{{ $enseignant->user->name }}</td>
-                                        <td class="py-2 px-4">{{ $enseignant->departement?->nom ?? '-' }}</td>
-                                        <td class="py-2 px-4">{{ $enseignant->evaluations_count }}</td>
-                                        <td class="py-2 px-4">
-                                            <span class="font-bold {{ $enseignant->moyenne >= 4 ? 'text-green-600' : ($enseignant->moyenne >= 3 ? 'text-yellow-600' : 'text-red-600') }}">
+                                @foreach ($topEnseignants as $index => $enseignant)
+                                    <tr class="border-t border-borderColor/30">
+                                        <td class="px-4 py-2 text-xs text-muted">
+                                            #{{ $index + 1 }}
+                                        </td>
+                                        <td class="px-4 py-2">
+                                            <span class="text-sm font-medium text-foreground">
+                                                {{ $enseignant->user->name }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-2 text-sm text-muted">
+                                            {{ $enseignant->departement?->nom ?? '-' }}
+                                        </td>
+                                        <td class="px-4 py-2 text-sm text-muted">
+                                            {{ $enseignant->evaluations_count }}
+                                        </td>
+                                        <td class="px-4 py-2">
+                                            @php
+                                                $moyenneClass =
+                                                    $enseignant->moyenne >= 4
+                                                        ? 'text-success'
+                                                        : ($enseignant->moyenne >= 3
+                                                            ? 'text-amber-500'
+                                                            : 'text-danger');
+                                            @endphp
+                                            <span class="text-sm font-semibold {{ $moyenneClass }}">
                                                 {{ number_format($enseignant->moyenne, 2) }}/5
                                             </span>
                                         </td>
@@ -91,28 +165,71 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </x-ui.card>
             @endif
+        </div>
 
-            <!-- Liens rapides -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
-                <a href="{{ route('admin.enseignants.index') }}" class="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
-                    <div class="text-2xl mb-2">👨‍🏫</div>
-                    <div class="font-medium">Enseignants</div>
-                </a>
-                <a href="{{ route('admin.etudiants.index') }}" class="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
-                    <div class="text-2xl mb-2">👨‍🎓</div>
-                    <div class="font-medium">Étudiants</div>
-                </a>
-                <a href="{{ route('admin.matieres.index') }}" class="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
-                    <div class="text-2xl mb-2">📚</div>
-                    <div class="font-medium">Matières</div>
-                </a>
-                <a href="{{ route('admin.periodes.index') }}" class="bg-white p-4 rounded-lg shadow hover:shadow-md transition text-center">
-                    <div class="text-2xl mb-2">📅</div>
-                    <div class="font-medium">Périodes</div>
-                </a>
-            </div>
+        {{-- Liens rapides --}}
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <x-ui.card
+                interactive
+                as="a"
+                href="{{ route('admin.enseignants.index') }}"
+                class="flex flex-col items-start gap-3 p-4"
+            >
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent-soft text-accent">
+                    👨‍🏫
+                </span>
+                <div>
+                    <p class="text-sm font-medium text-foreground">Enseignants</p>
+                    <p class="mt-1 text-xs text-muted">Gérer les enseignants et leurs matières</p>
+                </div>
+            </x-ui.card>
+
+            <x-ui.card
+                interactive
+                as="a"
+                href="{{ route('admin.etudiants.index') }}"
+                class="flex flex-col items-start gap-3 p-4"
+            >
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent-soft text-accent">
+                    👨‍🎓
+                </span>
+                <div>
+                    <p class="text-sm font-medium text-foreground">Étudiants</p>
+                    <p class="mt-1 text-xs text-muted">Gérer les profils étudiants</p>
+                </div>
+            </x-ui.card>
+
+            <x-ui.card
+                interactive
+                as="a"
+                href="{{ route('admin.matieres.index') }}"
+                class="flex flex-col items-start gap-3 p-4"
+            >
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent-soft text-accent">
+                    📚
+                </span>
+                <div>
+                    <p class="text-sm font-medium text-foreground">Matières</p>
+                    <p class="mt-1 text-xs text-muted">Configuer les matières évaluées</p>
+                </div>
+            </x-ui.card>
+
+            <x-ui.card
+                interactive
+                as="a"
+                href="{{ route('admin.periodes.index') }}"
+                class="flex flex-col items-start gap-3 p-4"
+            >
+                <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-accent-soft text-accent">
+                    📅
+                </span>
+                <div>
+                    <p class="text-sm font-medium text-foreground">Périodes</p>
+                    <p class="mt-1 text-xs text-muted">Planifier les campagnes d'évaluation</p>
+                </div>
+            </x-ui.card>
         </div>
     </div>
 </x-app-layout>
