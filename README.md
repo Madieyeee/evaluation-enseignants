@@ -13,7 +13,7 @@ Application Laravel pour l'évaluation des enseignants par les étudiants.
 
 ### 1. Cloner ou naviguer vers le projet
 ```bash
-cd "c:\Users\***REMOVED***\evaluation-enseignants"
+cd "C:\Users\...\evaluation-enseignants"
 ```
 
 ### 2. Installer les dépendances PHP
