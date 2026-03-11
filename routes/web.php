@@ -12,10 +12,26 @@ use App\Http\Controllers\Admin\PeriodeEvaluationController;
 use App\Http\Controllers\Admin\CritereController;
 use App\Http\Controllers\Etudiant\EvaluationController as EtudiantEvaluationController;
 use App\Http\Controllers\Enseignant\DashboardController as EnseignantDashboardController;
+use App\Http\Controllers\Api\NotificationController as ApiNotificationController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
+
+// API Routes for notifications (polling)
+Route::prefix('api')->middleware(['auth'])->group(function () {
+    Route::get('/notifications', [ApiNotificationController::class, 'index'])->name('api.notifications.index');
+    Route::post('/notifications/{id}/read', [ApiNotificationController::class, 'markAsRead'])->name('api.notifications.read');
+    Route::post('/notifications/read-all', [ApiNotificationController::class, 'markAllAsRead'])->name('api.notifications.read-all');
+});
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+// Routes pour les notifications
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 });
 
 // Redirection vers le dashboard approprié selon le rôle

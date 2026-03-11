@@ -22,13 +22,25 @@
                 <header
                     class="flex items-center justify-between border-b border-borderColor/60 bg-surface/80 px-6 py-3 backdrop-blur-sm"
                 >
-                    <div class="flex flex-col gap-1">
-                        <span class="text-xs font-medium uppercase tracking-[0.16em] text-muted">
-                            {{ $section ?? 'Vue globale' }}
-                        </span>
-                        <span class="text-sm font-medium text-foreground">
-                            {{ $pageTitle ?? ($header ?? 'Dashboard') }}
-                        </span>
+                    <div class="flex items-center gap-4">
+                        {{-- Bouton menu mobile --}}
+                        <button
+                            type="button"
+                            class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-muted/80 lg:hidden"
+                            @click="$dispatch('toggle-sidebar')"
+                            aria-label="Ouvrir le menu"
+                        >
+                            <x-lucide-menu class="h-4 w-4" />
+                        </button>
+
+                        <div class="flex flex-col gap-1">
+                            <span class="text-xs font-medium uppercase tracking-[0.16em] text-muted">
+                                {{ $section ?? 'Vue globale' }}
+                            </span>
+                            <span class="text-sm font-medium text-foreground">
+                                {{ $pageTitle ?? ($header ?? 'Dashboard') }}
+                            </span>
+                        </div>
                     </div>
 
                     <div class="flex items-center gap-3">
@@ -45,13 +57,8 @@
                             </template>
                         </button>
 
-                        {{-- Placeholder notifications + avatar à raffiner ensuite --}}
-                        <button
-                            type="button"
-                            class="inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-surface-muted/80"
-                        >
-                            <x-lucide-bell class="h-4 w-4" />
-                        </button>
+                        {{-- Notifications --}}
+                        <x-ui.notification-bell />
 
                         <div
                             class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-surface-muted text-xs font-medium text-foreground"
@@ -66,5 +73,6 @@
                 </main>
             </div>
         </div>
+        @stack('scripts')
     </body>
 </html>
