@@ -1,6 +1,6 @@
 # Système d'Évaluation des Enseignants
 
-Application Laravel pour l'évaluation des enseignants par les étudiants.
+Application Laravel pour l'évaluation des enseignants par les étudiants avec un design premium style dashboard (Linear/shadcn).
 
 ## 📋 Prérequis
 
@@ -75,6 +75,26 @@ npm run dev
 
 **Note** : Créez les comptes enseignants et étudiants via l'interface admin.
 
+## 🎨 Design System
+
+### Thèmes
+- **Light/Dark mode** avec persistance localStorage
+- Design tokens CSS variables (couleurs, radius, ombres)
+- Police Inter Variable
+
+### Composants UI (`<x-ui.*>`)
+- `card` - Cartes avec variantes interactives
+- `button` - Boutons primary/secondary/ghost/danger
+- `badge` - Badges avec variants soft/outline
+- `input` - Inputs avec icônes et validation
+- `dropdown` / `dropdown-item` - Menus déroulants
+- `avatar` - Avatars avec initiales
+- `notification-bell` - Cloche notifications temps réel
+- `chart-line` / `chart-bar` / `chart-radar` - Graphiques Chart.js
+
+### Composants Layout (`<x-layout.*>`)
+- `sidebar` - Sidebar responsive (offcanvas mobile, collapsible desktop)
+
 ## 📁 Structure du projet
 
 ```
@@ -82,17 +102,27 @@ evaluation-enseignants/
 ├── app/
 │   ├── Http/Controllers/
 │   │   ├── Admin/          # Contrôleurs admin
+│   │   ├── Api/            # Contrôleurs API (notifications)
 │   │   ├── Enseignant/     # Contrôleurs enseignant
 │   │   └── Etudiant/       # Contrôleurs étudiant
+│   ├── Notifications/      # Classes de notifications
 │   ├── Middleware/         # Middlewares (rôles)
-│   └── Models/             # Modèles Eloquent
+│   ├── Models/             # Modèles Eloquent
+│   └── Exports/            # Exports PDF/Excel
 ├── database/
 │   ├── migrations/         # Migrations DB
 │   └── seeders/           # Seeders (données initiales)
-├── resources/views/
-│   ├── admin/             # Vues admin
-│   ├── enseignant/        # Vues enseignant
-│   └── etudiant/          # Vues étudiant
+├── resources/
+│   ├── css/app.css         # Design tokens + composants
+│   ├── js/app.js           # Alpine.js + Chart.js config
+│   └── views/
+│       ├── admin/          # Vues admin
+│       ├── components/     # Composants Blade
+│       │   ├── ui/         # Composants UI réutilisables
+│       │   └── layout/     # Composants layout
+│       ├── enseignant/     # Vues enseignant
+│       ├── etudiant/       # Vues étudiant
+│       └── notifications/  # Vues notifications
 └── routes/web.php         # Routes de l'application
 ```
 
@@ -104,6 +134,8 @@ evaluation-enseignants/
 - ✅ Gestion des périodes d'évaluation
 - ✅ Gestion des critères d'évaluation
 - ✅ Tableau de bord avec statistiques
+- ✅ **Exports PDF** (enseignants, étudiants, évaluations)
+- ✅ **Exports Excel** (enseignants, étudiants, évaluations)
 
 ### Enseignant
 - ✅ Consulter ses évaluations
@@ -115,10 +147,17 @@ evaluation-enseignants/
 - ✅ Historique des évaluations
 - ✅ Note de 1 à 5 par critère
 
+### Notifications
+- ✅ Notifications temps réel (polling)
+- ✅ Composant notification-bell dans la topbar
+- ✅ Page liste des notifications
+- ✅ Types: NouvelleEvaluation, FeedbackEnseignant, RapportDisponible
+
 ## 📊 Base de données
 
 ### Tables principales
 - `users` - Utilisateurs avec rôles (admin, enseignant, etudiant)
+- `notifications` - Notifications stockées en base
 - `enseignants` - Profils enseignants
 - `etudiants` - Profils étudiants
 - `matieres` - Matières enseignées
@@ -147,6 +186,21 @@ php artisan route:list
 php artisan down
 php artisan up
 ```
+
+## 📦 Dépendances principales
+
+### Backend (Composer)
+- `laravel/framework` ^12.0
+- `laravel/fortify` - Authentification
+- `barryvdh/laravel-dompdf` - Exports PDF
+- `maatwebsite/excel` - Exports Excel
+- `blade-ui-kit/blade-lucide-icons` - Icônes Lucide
+
+### Frontend (npm)
+- `tailwindcss` ^3.4 - CSS framework
+- `alpinejs` ^3.14 - Réactivité
+- `chart.js` ^4.4 - Graphiques
+- `@fontsource-variable/inter` - Police Inter
 
 ## 📝 Licence
 
