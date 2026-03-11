@@ -30,7 +30,7 @@
                             @click="$dispatch('toggle-sidebar')"
                             aria-label="Ouvrir le menu"
                         >
-                            <x-lucide-menu class="h-4 w-4" />
+                            <x-ui.icon name="menu" class="h-4 w-4" />
                         </button>
 
                         <div class="flex flex-col gap-1">
@@ -50,10 +50,10 @@
                             @click="toggle()"
                         >
                             <template x-if="!isDark">
-                                <x-lucide-moon class="h-4 w-4" />
+                                <x-ui.icon name="moon" class="h-4 w-4" />
                             </template>
                             <template x-if="isDark">
-                                <x-lucide-sun-medium class="h-4 w-4" />
+                                <x-ui.icon name="sun-medium" class="h-4 w-4" />
                             </template>
                         </button>
 

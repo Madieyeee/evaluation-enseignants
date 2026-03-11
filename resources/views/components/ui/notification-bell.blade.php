@@ -17,7 +17,7 @@
         aria-haspopup="true"
         aria-label="Notifications"
     >
-        <x-lucide-bell class="h-4 w-4" />
+        <x-ui.icon name="bell" class="h-4 w-4" />
 
         {{-- Badge compteur --}}
         <span
@@ -58,7 +58,7 @@
         <div class="max-h-80 overflow-y-auto">
             <template x-if="notifications.length === 0">
                 <div class="flex flex-col items-center justify-center py-8 text-center">
-                    <x-lucide-bell-off class="h-8 w-8 text-muted" />
+                    <x-ui.icon name="bell-off" class="h-8 w-8 text-muted" />
                     <p class="mt-2 text-sm text-muted">Aucune notification</p>
                 </div>
             </template>
@@ -72,18 +72,33 @@
                 >
                     {{-- Icône --}}
                     <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-muted">
-                        <template x-if="notification.icon === 'clipboard-check'">
-                            <x-lucide-clipboard-check class="h-4 w-4 text-accent" />
-                        </template>
-                        <template x-if="notification.icon === 'message-square'">
-                            <x-lucide-message-square class="h-4 w-4 text-accent" />
-                        </template>
-                        <template x-if="notification.icon === 'file-text'">
-                            <x-lucide-file-text class="h-4 w-4 text-accent" />
-                        </template>
-                        <template x-if="!notification.icon || (notification.icon !== 'clipboard-check' && notification.icon !== 'message-square' && notification.icon !== 'file-text')">
-                            <x-lucide-bell class="h-4 w-4 text-accent" />
-                        </template>
+                        <svg x-bind:class="'h-4 w-4 text-accent'" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <template x-if="notification.icon === 'clipboard-check'">
+                                <g>
+                                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                                    <path d="m9 14 2 2 4-4"/>
+                                </g>
+                            </template>
+                            <template x-if="notification.icon === 'message-square'">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </template>
+                            <template x-if="notification.icon === 'file-text'">
+                                <g>
+                                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+                                    <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+                                    <path d="M10 9H8"/>
+                                    <path d="M16 13H8"/>
+                                    <path d="M16 17H8"/>
+                                </g>
+                            </template>
+                            <template x-if="!notification.icon || (notification.icon !== 'clipboard-check' && notification.icon !== 'message-square' && notification.icon !== 'file-text')">
+                                <g>
+                                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                                </g>
+                            </template>
+                        </svg>
                     </div>
 
                     {{-- Contenu --}}

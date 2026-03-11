@@ -59,10 +59,7 @@
             :aria-label="collapsed ? 'Étendre la sidebar' : 'Réduire la sidebar'"
             aria-expanded="true"
         >
-            <x-lucide-panel-left-close
-                class="h-4 w-4 transition-transform duration-200"
-                :class="{ 'rotate-180': collapsed }"
-            />
+            <x-ui.icon name="panel-left-close" class="h-4 w-4 transition-transform duration-200" x-bind:class="{ 'rotate-180': collapsed }" />
         </button>
 
         {{-- Bouton fermer mobile --}}
@@ -72,7 +69,7 @@
             @click="mobileOpen = false"
             aria-label="Fermer le menu"
         >
-            <x-lucide-x class="h-4 w-4" />
+            <x-ui.icon name="x" class="h-4 w-4" />
         </button>
     </div>
 
@@ -90,7 +87,7 @@
                 @click="if (window.innerWidth < 1024) mobileOpen = false"
             >
                 @if (!empty($item['icon']))
-                    <x-lucide-{{ $item['icon'] }} class="h-4 w-4 shrink-0" />
+                    <x-ui.icon :name="$item['icon']" class="h-4 w-4 shrink-0" />
                 @endif
                 <span
                     class="truncate"

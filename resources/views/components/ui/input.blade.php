@@ -17,7 +17,7 @@
     <div class="relative">
         @if($icon)
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-muted">
-                <x-lucide-{{ $icon }} class="h-4 w-4" />
+                <x-ui.icon :name="$icon" class="h-4 w-4" />
             </div>
         @endif
 

@@ -37,14 +37,10 @@
                     <div class="flex gap-4">
                         {{-- Icône --}}
                         <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-muted">
-                            @if(($data['icon'] ?? '') === 'clipboard-check')
-                                <x-lucide-clipboard-check class="h-5 w-5 text-accent" />
-                            @elseif(($data['icon'] ?? '') === 'message-square')
-                                <x-lucide-message-square class="h-5 w-5 text-accent" />
-                            @elseif(($data['icon'] ?? '') === 'file-text')
-                                <x-lucide-file-text class="h-5 w-5 text-accent" />
+                            @if(($data['icon'] ?? ''))
+                                <x-ui.icon :name="$data['icon']" class="h-5 w-5 text-accent" />
                             @else
-                                <x-lucide-bell class="h-5 w-5 text-accent" />
+                                <x-ui.icon name="bell" class="h-5 w-5 text-accent" />
                             @endif
                         </div>
 
@@ -90,7 +86,7 @@
                 </div>
             @empty
                 <div class="card p-12 text-center">
-                    <x-lucide-bell-off class="mx-auto h-12 w-12 text-muted" />
+                    <x-ui.icon name="bell-off" class="mx-auto h-12 w-12 text-muted" />
                     <h3 class="mt-4 text-lg font-semibold text-foreground">Aucune notification</h3>
                     <p class="mt-2 text-sm text-muted">
                         Vous n'avez pas encore de notifications. Elles apparaîtront ici lorsque vous recevrez des évaluations ou des feedbacks.

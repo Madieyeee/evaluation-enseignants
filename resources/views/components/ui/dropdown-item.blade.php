@@ -13,7 +13,7 @@
     ]]) }}
 >
     @if($icon)
-        <x-lucide-{{ $icon }} class="h-4 w-4" />
+        <x-ui.icon :name="$icon" class="h-4 w-4" />
     @endif
     {{ $slot }}
 </a>
