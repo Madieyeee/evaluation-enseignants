@@ -1,39 +1,61 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Modifier la période</h2>
+        <div class="flex items-center justify-between">
+            <h2 class="text-sm font-medium text-muted">Modifier la periode</h2>
+            <x-ui.button as="a" href="{{ route('admin.periodes.show', $periode) }}" variant="ghost" size="sm" icon="arrow-left">
+                Retour
+            </x-ui.button>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <form action="{{ route('admin.periodes.update', $periode) }}" method="POST">
-                    @csrf @method('PUT')
-                    <div class="mb-4">
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Nom de la période</label>
-                        <input type="text" name="nom" value="{{ $periode->nom }}" class="w-full border rounded px-3 py-2" required>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2">Date de début</label>
-                            <input type="date" name="date_debut" value="{{ $periode->date_debut->format('Y-m-d') }}" class="w-full border rounded px-3 py-2" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-bold mb-2">Date de fin</label>
-                            <input type="date" name="date_fin" value="{{ $periode->date_fin->format('Y-m-d') }}" class="w-full border rounded px-3 py-2" required>
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <label class="flex items-center">
-                            <input type="checkbox" name="est_active" value="1" {{ $periode->est_active ? 'checked' : '' }} class="mr-2">
-                            <span class="text-gray-700">Période active</span>
-                        </label>
-                    </div>
-                    <div class="flex gap-2">
-                        <a href="{{ route('admin.periodes.index') }}" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">Annuler</a>
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Enregistrer</button>
-                    </div>
-                </form>
+    <div class="space-y-6">
+        @if ($errors->any())
+            <x-ui.card class="border border-danger/20 bg-danger/5 text-danger text-sm">
+                <ul class="list-disc list-inside space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </x-ui.card>
+        @endif
+
+        <x-ui.card>
+            <div class="mb-6">
+                <h3 class="text-sm font-semibold text-foreground">Modifier : {{ $periode->nom }}</h3>
             </div>
-        </div>
+            <form action="{{ route('admin.periodes.update', $periode) }}" method="POST">
+                @csrf @method('PUT')
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-foreground mb-1.5">Nom <span class="text-danger">*</span></label>
+                        <x-ui.input type="text" name="nom" :value="old('nom', $periode->nom)" required />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-1.5">Date de debut <span class="text-danger">*</span></label>
+                        <x-ui.input type="date" name="date_debut" :value="old('date_debut', $periode->date_debut?->format('Y-m-d'))" required />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-1.5">Date de fin <span class="text-danger">*</span></label>
+                        <x-ui.input type="date" name="date_fin" :value="old('date_fin', $periode->date_fin?->format('Y-m-d'))" required />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-foreground mb-1.5">Statut</label>
+                        <select name="statut" class="w-full rounded-lg border border-borderColor/60 bg-surface px-3 py-2 text-sm text-foreground focus:border-accent focus:ring-1 focus:ring-accent transition-colors">
+                            <option value="inactive" {{ old('statut', $periode->statut) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            <option value="active" {{ old('statut', $periode->statut) == 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="terminee" {{ old('statut', $periode->statut) == 'terminee' ? 'selected' : '' }}>Terminee</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-5">
+                    <label class="block text-sm font-medium text-foreground mb-1.5">Description</label>
+                    <textarea name="description" rows="3" class="w-full rounded-lg border border-borderColor/60 bg-surface px-3 py-2 text-sm text-foreground focus:border-accent focus:ring-1 focus:ring-accent transition-colors">{{ old('description', $periode->description) }}</textarea>
+                </div>
+                <div class="flex items-center gap-3 mt-6 pt-6 border-t border-borderColor/40">
+                    <x-ui.button type="submit" variant="primary" icon="save">Enregistrer les modifications</x-ui.button>
+                    <x-ui.button as="a" href="{{ route('admin.periodes.show', $periode) }}" variant="ghost">Annuler</x-ui.button>
+                </div>
+            </form>
+        </x-ui.card>
     </div>
 </x-app-layout>
