@@ -1,4 +1,3 @@
-{{-- resources/views/components/layout/sidebar.blade.php --}}
 @props([
     'items' => [],
 ])
@@ -6,126 +5,96 @@
 <aside
     x-data="sidebar()"
     x-init="init()"
-    @resize.window="handleResize"
+    @resize.window="handleResize()"
     @toggle-sidebar.window="toggleMobile()"
-    class="flex flex-col border-r border-borderColor/70 bg-surface/95 backdrop-blur-sm transition-all duration-300 ease-soft-out
-        fixed inset-y-0 left-0 z-40 lg:relative
-        {{ isset($attributes['class']) ? $attributes['class'] : '' }}"
+    class="flex flex-col border-r border-borderColor/70 bg-surface/95 backdrop-blur-sm transition-all duration-300 ease-out
+        fixed inset-y-0 left-0 z-40 lg:relative"
     :class="{
-        'lg:w-64': open && !collapsed,
-        'lg:w-20': collapsed,
-        '-translate-x-full lg:translate-x-0': !mobileOpen && !open,
+        'w-64': !collapsed,
+        'w-20': collapsed,
+        '-translate-x-full lg:translate-x-0': !mobileOpen,
         'translate-x-0': mobileOpen
     }"
-    x-show="mobileOpen || window.innerWidth >= 1024"
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="-translate-x-full"
-    x-transition:enter-end="translate-x-0"
-    x-transition:leave="transition ease-in duration-200"
-    x-transition:leave-start="translate-x-0"
-    x-transition:leave-end="-translate-x-full"
     x-cloak
 >
-    <div
-        x-show="mobileOpen"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-sm lg:hidden"
-        @click="mobileOpen = false"
-        x-cloak
-    ></div>
-
-    <div class="flex items-center justify-between px-4 py-4 border-b border-borderColor/40">
-        <div class="flex items-center gap-2" x-show="!collapsed || mobileOpen">
-            <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-accent-soft text-accent">
-                <span class="text-sm font-semibold">EV</span>
-            </span>
-            <span class="text-sm font-semibold tracking-tight text-foreground" x-show="!collapsed || mobileOpen" x-transition.opacity>
-                Evaluation
+    {{-- Header logo --}}
+    <div class="flex h-14 items-center justify-between border-b border-borderColor/60 px-4">
+        <div class="flex items-center gap-2 overflow-hidden" x-show="!collapsed || mobileOpen">
+            <div class="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-accent text-white text-xs font-bold">
+                E
+            </div>
+            <span class="truncate text-sm font-semibold text-foreground" x-transition.opacity.duration.150ms>
+                EvalEnseignants
             </span>
         </div>
+        {{-- Toggle collapse button (desktop) --}}
         <button
             type="button"
-            class="hidden rounded-lg p-1.5 text-muted hover:bg-surface-muted/80 hover:text-foreground transition-colors lg:inline-flex"
-            @click="toggleCollapse()"
-            :aria-label="collapsed ? 'Etendre la sidebar' : 'Reduire la sidebar'"
+            class="hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-md text-muted hover:bg-surface-muted/80 transition-colors"
+            @click="collapsed = !collapsed; localStorage.setItem('sidebar_collapsed', collapsed)"
+            :title="collapsed ? 'Agrandir' : 'Reduire'"
         >
-            <x-ui.icon name="panel-left-close" class="h-4 w-4 transition-transform duration-200" x-bind:class="{ 'rotate-180': collapsed }" />
-        </button>
-        <button
-            type="button"
-            class="rounded-lg p-1.5 text-muted hover:bg-surface-muted/80 hover:text-foreground transition-colors lg:hidden"
-            @click="mobileOpen = false"
-        >
-            <x-ui.icon name="x" class="h-4 w-4" />
+            <x-ui.icon name="panel-left-close" class="h-3.5 w-3.5" x-show="!collapsed" />
+            <x-ui.icon name="panel-left-open" class="h-3.5 w-3.5" x-show="collapsed" />
         </button>
     </div>
 
-    <nav class="flex-1 space-y-1 px-2 py-4 overflow-y-auto">
+    {{-- Navigation --}}
+    <nav class="flex-1 space-y-0.5 px-2 py-4 overflow-y-auto">
         @foreach ($items as $item)
             @php $isActive = $item['active'] ?? false; @endphp
             <a
                 href="{{ isset($item['route']) ? route($item['route']) : ($item['href'] ?? '#') }}"
-                class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-soft-out
-                    {{ $isActive ? 'bg-accent-soft text-accent' : 'text-muted hover:bg-surface-muted/80 hover:text-foreground' }}"
+                class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200
+                    {{ $isActive ? 'bg-accent/10 text-accent' : 'text-muted hover:bg-surface-muted/80 hover:text-foreground' }}"
                 @click="if (window.innerWidth < 1024) mobileOpen = false"
             >
                 @if (!empty($item['icon']))
-                    <x-ui.icon :name="$item['icon']" class="h-4 w-4 shrink-0" />
+                    <x-ui.icon :name="$item['icon']" class="h-4 w-4 shrink-0 {{ $isActive ? 'text-accent' : '' }}" />
                 @endif
                 <span class="truncate" x-show="!collapsed || mobileOpen" x-transition.opacity.duration.150ms>
                     {{ $item['label'] }}
                 </span>
+                @if ($isActive)
+                    <span class="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-accent" x-show="!collapsed || mobileOpen"></span>
+                @endif
             </a>
         @endforeach
     </nav>
 
-    <div class="border-t border-borderColor/40 p-4 space-y-3">
-        <div class="flex items-center gap-3" x-show="!collapsed || mobileOpen">
-            <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-surface-muted text-xs font-medium text-foreground">
-                {{ strtoupper(mb_substr(auth()->user()->name ?? 'U', 0, 2)) }}
+    {{-- Footer: infos user + deconnexion --}}
+    <div class="border-t border-borderColor/60 p-3">
+        @auth
+            <div class="flex items-center gap-3 rounded-lg px-2 py-2 mb-1" x-show="!collapsed || mobileOpen" x-transition.opacity.duration.150ms>
+                <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-accent/10 text-xs font-semibold text-accent">
+                    {{ strtoupper(mb_substr(auth()->user()->name, 0, 2)) }}
+                </div>
+                <div class="min-w-0 flex-1">
+                    <p class="truncate text-xs font-medium text-foreground">{{ auth()->user()->name }}</p>
+                    <p class="truncate text-xs text-muted">{{ ucfirst(auth()->user()->role ?? 'user') }}</p>
+                </div>
             </div>
-            <div class="flex-1 min-w-0">
-                <p class="truncate text-sm font-medium text-foreground">{{ auth()->user()->name ?? 'Utilisateur' }}</p>
-                <p class="truncate text-xs text-muted">{{ ucfirst(auth()->user()->role ?? 'user') }}</p>
-            </div>
-        </div>
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-sm font-medium text-danger hover:bg-danger/10 transition-colors">
-                <x-ui.icon name="log-out" class="h-4 w-4 shrink-0" />
-                <span x-show="!collapsed || mobileOpen">Deconnexion</span>
-            </button>
-        </form>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button
+                    type="submit"
+                    class="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted hover:bg-danger/10 hover:text-danger transition-colors"
+                >
+                    <x-ui.icon name="log-out" class="h-4 w-4 shrink-0" />
+                    <span x-show="!collapsed || mobileOpen" x-transition.opacity.duration.150ms>
+                        Deconnexion
+                    </span>
+                </button>
+            </form>
+        @endauth
     </div>
 </aside>
 
-@push('scripts')
-<script>
-    function sidebar() {
-        return {
-            open: true,
-            collapsed: false,
-            mobileOpen: false,
-            init() {
-                const stored = localStorage.getItem('sidebar_collapsed');
-                if (stored === 'true') this.collapsed = true;
-            },
-            handleResize() {
-                if (window.innerWidth >= 1024) this.mobileOpen = false;
-            },
-            toggleCollapse() {
-                this.collapsed = !this.collapsed;
-                localStorage.setItem('sidebar_collapsed', this.collapsed);
-            },
-            toggleMobile() {
-                this.mobileOpen = !this.mobileOpen;
-            }
-        }
-    }
-</script>
-@endpush
+{{-- Overlay mobile --}}
+<div
+    x-data
+    x-show="$store && false"
+    class="fixed inset-0 z-30 bg-black/50 lg:hidden"
+    @click="$dispatch('toggle-sidebar')"
+    x-cloak
+></div>
