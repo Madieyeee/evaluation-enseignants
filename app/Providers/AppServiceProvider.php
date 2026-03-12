@@ -32,7 +32,6 @@ class AppServiceProvider extends ServiceProvider
             } elseif ($user->role === 'enseignant') {
                 $items = [
                     ['label' => 'Tableau de bord', 'icon' => 'layout-dashboard', 'route' => 'enseignant.dashboard'],
-                    ['label' => 'Mes evaluations', 'icon' => 'star',             'route' => 'enseignant.evaluations.index'],
                 ];
             } elseif ($user->role === 'etudiant') {
                 $items = [

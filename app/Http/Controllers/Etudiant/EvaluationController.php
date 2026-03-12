@@ -18,20 +18,25 @@ class EvaluationController extends Controller
         $etudiant = auth()->user()->etudiant;
         $periodeActive = PeriodeEvaluation::where('est_active', true)->first();
         
-        // Enseignants et matières que l'étudiant peut évaluer
-        $enseignants = Enseignant::with(['user', 'matieres'])
-            ->whereHas('matieres')
+        // Matières que l'étudiant peut évaluer (de sa filière avec enseignant assigné)
+        $matieres = Matiere::with(['enseignant.user', 'filiere'])
+            ->whereHas('enseignant')
+            ->when($etudiant->filiere_id, function ($query) use ($etudiant) {
+                $query->where('filiere_id', $etudiant->filiere_id);
+            })
             ->get();
 
         // Évaluations déjà faites par l'étudiant
         $evaluationsFaites = Evaluation::where('etudiant_id', $etudiant->id)
-            ->with(['enseignant.user', 'matiere'])
-            ->get()
-            ->keyBy(function ($eval) {
-                return $eval->enseignant_id . '_' . $eval->matiere_id;
-            });
+            ->pluck('matiere_id')
+            ->toArray();
 
-        return view('etudiant.evaluations.index', compact('enseignants', 'evaluationsFaites', 'periodeActive'));
+        // Marquer les matières déjà évaluées
+        $matieres->each(function ($matiere) use ($evaluationsFaites) {
+            $matiere->dejaEvalue = in_array($matiere->id, $evaluationsFaites);
+        });
+
+        return view('etudiant.evaluations.index', compact('matieres', 'periodeActive'));
     }
 
     public function create(Enseignant $enseignant, Matiere $matiere)

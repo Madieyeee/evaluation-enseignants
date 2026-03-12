@@ -38,6 +38,7 @@ class EtudiantController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role' => 'etudiant',
+            'email_verified_at' => now(),
         ]);
 
         Etudiant::create([

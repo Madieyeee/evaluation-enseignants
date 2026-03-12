@@ -7,6 +7,21 @@
     'icon' => null,
 ])
 
+@php
+    $inputClasses = 'w-full rounded-lg border border-borderColor/60 bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted/60 focus:border-accent focus:ring-1 focus:ring-accent transition-colors';
+    if ($icon) {
+        $inputClasses .= ' pl-10';
+    }
+    if ($error) {
+        $inputClasses .= ' border-danger focus:border-danger focus:ring-danger/50';
+    }
+    $extraClass = $attributes->get('class', '');
+    if (is_array($extraClass)) {
+        $extraClass = implode(' ', $extraClass);
+    }
+    $inputClasses = trim($inputClasses . ' ' . $extraClass);
+@endphp
+
 <div class="flex flex-col gap-1.5">
     @if($label)
         <label for="{{ $attributes->get('id', $attributes->get('name')) }}" class="text-sm font-medium text-foreground">
@@ -23,11 +38,7 @@
 
         <input
             type="{{ $type }}"
-            {{ $attributes->merge(['class' => [
-                'input',
-                $icon ? 'pl-10' : '',
-                $error ? 'border-danger focus:border-danger focus:ring-danger/50' : '',
-            ]]) }}
+            {{ $attributes->except(['class'])->merge(['class' => $inputClasses]) }}
         />
     </div>
 
