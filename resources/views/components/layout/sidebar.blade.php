@@ -1,6 +1,6 @@
 {{-- resources/views/components/layout/sidebar.blade.php --}}
 @props([
-    'items' => [], // [['label' => 'Dashboard', 'icon' => 'layout-dashboard', 'route' => 'dashboard', 'active' => true], ...]
+    'items' => [],
 ])
 
 <aside
@@ -26,7 +26,6 @@
     x-transition:leave-end="-translate-x-full"
     x-cloak
 >
-    {{-- Overlay mobile --}}
     <div
         x-show="mobileOpen"
         x-transition:enter="transition ease-out duration-300"
@@ -40,68 +39,52 @@
         x-cloak
     ></div>
 
-    {{-- Header --}}
     <div class="flex items-center justify-between px-4 py-4 border-b border-borderColor/40">
         <div class="flex items-center gap-2" x-show="!collapsed || mobileOpen">
             <span class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-accent-soft text-accent">
                 <span class="text-sm font-semibold">EV</span>
             </span>
             <span class="text-sm font-semibold tracking-tight text-foreground" x-show="!collapsed || mobileOpen" x-transition.opacity>
-                Évaluation
+                Evaluation
             </span>
         </div>
-
-        {{-- Bouton collapse desktop --}}
         <button
             type="button"
             class="hidden rounded-lg p-1.5 text-muted hover:bg-surface-muted/80 hover:text-foreground transition-colors lg:inline-flex"
             @click="toggleCollapse()"
-            :aria-label="collapsed ? 'Étendre la sidebar' : 'Réduire la sidebar'"
-            aria-expanded="true"
+            :aria-label="collapsed ? 'Etendre la sidebar' : 'Reduire la sidebar'"
         >
             <x-ui.icon name="panel-left-close" class="h-4 w-4 transition-transform duration-200" x-bind:class="{ 'rotate-180': collapsed }" />
         </button>
-
-        {{-- Bouton fermer mobile --}}
         <button
             type="button"
             class="rounded-lg p-1.5 text-muted hover:bg-surface-muted/80 hover:text-foreground transition-colors lg:hidden"
             @click="mobileOpen = false"
-            aria-label="Fermer le menu"
         >
             <x-ui.icon name="x" class="h-4 w-4" />
         </button>
     </div>
 
-    {{-- Navigation --}}
     <nav class="flex-1 space-y-1 px-2 py-4 overflow-y-auto">
         @foreach ($items as $item)
-            @php
-                $isActive = $item['active'] ?? false;
-            @endphp
+            @php $isActive = $item['active'] ?? false; @endphp
             <a
                 href="{{ isset($item['route']) ? route($item['route']) : ($item['href'] ?? '#') }}"
                 class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ease-soft-out
                     {{ $isActive ? 'bg-accent-soft text-accent' : 'text-muted hover:bg-surface-muted/80 hover:text-foreground' }}"
-                :title="collapsed && !mobileOpen ? '{{ $item['label'] }}' : ''"
                 @click="if (window.innerWidth < 1024) mobileOpen = false"
             >
                 @if (!empty($item['icon']))
                     <x-ui.icon :name="$item['icon']" class="h-4 w-4 shrink-0" />
                 @endif
-                <span
-                    class="truncate"
-                    x-show="!collapsed || mobileOpen"
-                    x-transition.opacity.duration.150ms
-                >
+                <span class="truncate" x-show="!collapsed || mobileOpen" x-transition.opacity.duration.150ms>
                     {{ $item['label'] }}
                 </span>
             </a>
         @endforeach
     </nav>
 
-    {{-- Footer avec info utilisateur --}}
-    <div class="border-t border-borderColor/40 p-4">
+    <div class="border-t border-borderColor/40 p-4 space-y-3">
         <div class="flex items-center gap-3" x-show="!collapsed || mobileOpen">
             <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-surface-muted text-xs font-medium text-foreground">
                 {{ strtoupper(mb_substr(auth()->user()->name ?? 'U', 0, 2)) }}
@@ -111,6 +94,13 @@
                 <p class="truncate text-xs text-muted">{{ ucfirst(auth()->user()->role ?? 'user') }}</p>
             </div>
         </div>
+        <form method="POST" action="{{ route('logout') }}">
+            @csrf
+            <button type="submit" class="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-sm font-medium text-danger hover:bg-danger/10 transition-colors">
+                <x-ui.icon name="log-out" class="h-4 w-4 shrink-0" />
+                <span x-show="!collapsed || mobileOpen">Deconnexion</span>
+            </button>
+        </form>
     </div>
 </aside>
 
@@ -121,25 +111,17 @@
             open: true,
             collapsed: false,
             mobileOpen: false,
-
             init() {
                 const stored = localStorage.getItem('sidebar_collapsed');
-                if (stored === 'true') {
-                    this.collapsed = true;
-                }
+                if (stored === 'true') this.collapsed = true;
             },
-
             handleResize() {
-                if (window.innerWidth >= 1024) {
-                    this.mobileOpen = false;
-                }
+                if (window.innerWidth >= 1024) this.mobileOpen = false;
             },
-
             toggleCollapse() {
                 this.collapsed = !this.collapsed;
                 localStorage.setItem('sidebar_collapsed', this.collapsed);
             },
-
             toggleMobile() {
                 this.mobileOpen = !this.mobileOpen;
             }
@@ -147,4 +129,3 @@
     }
 </script>
 @endpush
-
