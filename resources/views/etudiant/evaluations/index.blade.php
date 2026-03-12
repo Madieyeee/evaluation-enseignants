@@ -1,33 +1,39 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Évaluer les enseignants</h2>
+        <div class="flex items-center justify-between">
+            <h2 class="text-sm font-medium text-muted">Evaluer les enseignants</h2>
+            <x-ui.button as="a" href="{{ route('etudiant.dashboard') }}" variant="ghost" size="sm" icon="arrow-left">Retour au tableau de bord</x-ui.button>
+        </div>
     </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if(session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">{{ session('error') }}</div>
-            @endif
-
-            @if(!$periodeActive)
-                <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-6">
-                    Aucune période d'évaluation n'est actuellement active. Veuillez patienter.
+    <div class="space-y-6">
+        @if(session('error'))
+            <x-ui.card class="border border-danger/20 bg-danger/5 text-danger text-sm">{{ session('error') }}</x-ui.card>
+        @endif
+        @if(!$periodeActive)
+            <x-ui.card class="border border-warning/20 bg-warning/5 text-warning text-sm">
+                <div class="flex items-center gap-2">
+                    <x-ui.icon name="alert-triangle" class="h-4 w-4" />
+                    Aucune periode d'evaluation n'est actuellement active. Veuillez patienter.
                 </div>
-            @else
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-                    Période d'évaluation active : <strong>{{ $periodeActive->nom }}</strong> 
+            </x-ui.card>
+        @else
+            <x-ui.card class="border border-success/20 bg-success/5 text-success text-sm">
+                <div class="flex items-center gap-2">
+                    <x-ui.icon name="calendar-range" class="h-4 w-4" />
+                    Periode active : <strong>{{ $periodeActive->nom }}</strong>
                     ({{ $periodeActive->date_debut->format('d/m/Y') }} - {{ $periodeActive->date_fin->format('d/m/Y') }})
                 </div>
-            @endif
-
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <table class="min-w-full">
-                    <thead>
-                        <tr class="bg-gray-50">
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Enseignant</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Matière</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+            </x-ui.card>
+        @endif
+        <x-ui.card class="p-0">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-surface-muted/60 text-xs uppercase tracking-wide text-muted">
+                        <tr>
+                            <th class="px-4 py-3 text-left">Enseignant</th>
+                            <th class="px-4 py-3 text-left">Matiere</th>
+                            <th class="px-4 py-3 text-left">Statut</th>
+                            <th class="px-4 py-3 text-right">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -37,25 +43,23 @@
                                     $key = $enseignant->id . '_' . $matiere->id;
                                     $dejaEvalue = isset($evaluationsFaites[$key]);
                                 @endphp
-                                <tr class="border-b">
-                                    <td class="px-6 py-4">{{ $enseignant->user->name }}</td>
-                                    <td class="px-6 py-4">{{ $matiere->nom }}</td>
-                                    <td class="px-6 py-4">
+                                <tr class="border-t border-borderColor/30 hover:bg-surface-muted/30 transition-colors">
+                                    <td class="px-4 py-3 font-medium text-foreground">{{ $enseignant->user->name }}</td>
+                                    <td class="px-4 py-3 text-muted">{{ $matiere->nom }}</td>
+                                    <td class="px-4 py-3">
                                         @if($dejaEvalue)
-                                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">Évalué</span>
+                                            <span class="inline-flex items-center rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">Evalue</span>
                                         @else
-                                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-sm">À évaluer</span>
+                                            <span class="inline-flex items-center rounded-full bg-warning/10 px-2 py-0.5 text-xs font-medium text-warning">A evaluer</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-4 py-3 text-right">
                                         @if($periodeActive && !$dejaEvalue)
-                                            <a href="{{ route('etudiant.evaluations.create', [$enseignant, $matiere]) }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                                                Évaluer
-                                            </a>
+                                            <x-ui.button as="a" href="{{ route('etudiant.evaluations.create', [$enseignant, $matiere]) }}" variant="primary" size="xs" icon="clipboard-check">Evaluer</x-ui.button>
                                         @elseif($dejaEvalue)
-                                            <span class="text-gray-500">Déjà évalué</span>
+                                            <span class="text-xs text-muted">Deja evalue</span>
                                         @else
-                                            <span class="text-gray-500">Période fermée</span>
+                                            <span class="text-xs text-muted">Periode fermee</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -64,6 +68,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </x-ui.card>
     </div>
 </x-app-layout>
