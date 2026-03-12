@@ -4,7 +4,6 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
-use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -12,9 +11,12 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        View::composer('components.layout.sidebar', function ($view) {
+        View::composer('layouts.app', function ($view) {
             $user = auth()->user();
-            if (!$user) return;
+            if (!$user) {
+                $view->with('sidebarItems', []);
+                return;
+            }
 
             $items = [];
 
@@ -32,7 +34,6 @@ class AppServiceProvider extends ServiceProvider
             } elseif ($user->role === 'enseignant') {
                 $items = [
                     ['label' => 'Tableau de bord', 'icon' => 'layout-dashboard', 'route' => 'enseignant.dashboard'],
-                    ['label' => 'Mes evaluations', 'icon' => 'star',             'route' => 'enseignant.evaluations.index'],
                 ];
             } elseif ($user->role === 'etudiant') {
                 $items = [
@@ -47,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
                 return $item;
             }, $items);
 
-            $view->with('items', $items);
+            $view->with('sidebarItems', $items);
         });
     }
 }

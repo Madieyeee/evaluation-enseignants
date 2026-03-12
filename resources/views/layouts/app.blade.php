@@ -60,6 +60,7 @@
                         {{-- Notifications --}}
                         <x-ui.notification-bell />
 
+                        {{-- Avatar --}}
                         <div
                             class="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-surface-muted text-xs font-medium text-foreground"
                         >
