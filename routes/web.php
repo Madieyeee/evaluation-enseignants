@@ -16,7 +16,17 @@ use App\Http\Controllers\Api\NotificationController as ApiNotificationController
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
-// API Routes for notifications (polling)
+/*
+|--------------------------------------------------------------------------
+| Routes HTTP de l'application
+|--------------------------------------------------------------------------
+|
+| Ce fichier centralise toutes les routes web : API de notifications,
+| dashboards spécifiques selon le rôle, back-office admin et espace étudiant.
+|
+*/
+
+// API REST légère utilisée par le front pour récupérer / marquer les notifications
 Route::prefix('api')->middleware(['auth'])->group(function () {
     Route::get('/notifications', [ApiNotificationController::class, 'index'])->name('api.notifications.index');
     Route::post('/notifications/{id}/read', [ApiNotificationController::class, 'markAsRead'])->name('api.notifications.read');
@@ -27,14 +37,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Routes pour les notifications
+// Routes web pour consulter / marquer les notifications dans l'interface
 Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
     Route::post('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
 });
 
-// Redirection vers le dashboard approprié selon le rôle
+// Redirection vers le dashboard approprié en fonction du rôle de l'utilisateur connecté
 Route::get('/dashboard', function () {
     if (auth()->user()->isAdmin()) {
         return redirect()->route('admin.dashboard');
@@ -50,7 +60,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Routes Admin
+// Back-office Administrateur : gestion des référentiels et des périodes d'évaluation
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', DashboardController::class)->name('dashboard');
     Route::resource('departements', DepartementController::class);
@@ -72,12 +82,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/exports/evaluations/excel', [ExportController::class, 'evaluationsExcel'])->name('exports.evaluations.excel');
 });
 
-// Routes Enseignant
+// Espace enseignant : un seul dashboard dédié
 Route::middleware(['auth', 'enseignant'])->prefix('enseignant')->name('enseignant.')->group(function () {
     Route::get('/', [EnseignantDashboardController::class, '__invoke'])->name('dashboard');
 });
 
-// Routes Étudiant
+// Espace étudiant : dashboard + flux d'évaluation
 Route::middleware(['auth', 'etudiant'])->prefix('etudiant')->name('etudiant.')->group(function () {
     Route::get('/', function () {
         return view('etudiant.dashboard');

@@ -1,7 +1,10 @@
 @props([
+    // Tableau associatif d'items de navigation :
+    // ['label' => 'Dashboard', 'icon' => 'layout-dashboard', 'route' => 'admin.dashboard', 'active' => true]
     'items' => [],
 ])
 
+{{-- Barre latérale principale pour le layout authentifié --}}
 <aside class="flex w-64 flex-col border-r border-borderColor/70 bg-surface/95 backdrop-blur-sm">
     <div class="flex h-14 items-center justify-between border-b border-borderColor/60 px-4">
         <div class="flex items-center gap-2 overflow-hidden">
@@ -16,6 +19,7 @@
         </div>
     </div>
 
+    {{-- Liens de navigation (admin / enseignant / étudiant) --}}
     <nav class="flex-1 space-y-0.5 overflow-y-auto px-2 py-4">
         @foreach ($items as $item)
             @php
@@ -38,6 +42,7 @@
         @endforeach
     </nav>
 
+    {{-- Bloc utilisateur + déconnexion en pied de sidebar --}}
     @auth
         <div class="border-t border-borderColor/60 p-3">
             <div class="mb-1 flex items-center gap-3 rounded-lg px-2 py-2">

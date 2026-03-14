@@ -11,14 +11,20 @@ use App\Models\Critere;
 use App\Models\PeriodeEvaluation;
 use Illuminate\Http\Request;
 
+/**
+ * Flux métier côté étudiant pour créer et consulter ses évaluations.
+ */
 class EvaluationController extends Controller
 {
+    /**
+     * Liste les matières que l'étudiant peut évaluer pour la période active.
+     */
     public function index()
     {
         $etudiant = auth()->user()->etudiant;
         $periodeActive = PeriodeEvaluation::where('est_active', true)->first();
-        
-        // Matières que l'étudiant peut évaluer (de sa filière avec enseignant assigné)
+
+        // Matières de la filière de l'étudiant avec un enseignant assigné
         $matieres = Matiere::with(['enseignant.user', 'filiere'])
             ->whereHas('enseignant')
             ->when($etudiant->filiere_id, function ($query) use ($etudiant) {
@@ -26,12 +32,12 @@ class EvaluationController extends Controller
             })
             ->get();
 
-        // Évaluations déjà faites par l'étudiant
+        // Identifiants des matières déjà évaluées par cet étudiant
         $evaluationsFaites = Evaluation::where('etudiant_id', $etudiant->id)
             ->pluck('matiere_id')
             ->toArray();
 
-        // Marquer les matières déjà évaluées
+        // Flag "dejaEvalue" pour l'affichage dans la vue
         $matieres->each(function ($matiere) use ($evaluationsFaites) {
             $matiere->dejaEvalue = in_array($matiere->id, $evaluationsFaites);
         });
@@ -39,11 +45,14 @@ class EvaluationController extends Controller
         return view('etudiant.evaluations.index', compact('matieres', 'periodeActive'));
     }
 
+    /**
+     * Affiche le formulaire d'évaluation pour un couple enseignant/matière.
+     */
     public function create(Enseignant $enseignant, Matiere $matiere)
     {
         $etudiant = auth()->user()->etudiant;
-        
-        // Vérifier si déjà évalué
+
+        // Empêcher la création d'une évaluation en double pour ce triplet (étudiant, enseignant, matière)
         $dejaEvalue = Evaluation::where('etudiant_id', $etudiant->id)
             ->where('enseignant_id', $enseignant->id)
             ->where('matiere_id', $matiere->id)
@@ -60,6 +69,9 @@ class EvaluationController extends Controller
         return view('etudiant.evaluations.create', compact('enseignant', 'matiere', 'criteres', 'periodeActive'));
     }
 
+    /**
+     * Enregistre une nouvelle évaluation et les notes par critère.
+     */
     public function store(Request $request, Enseignant $enseignant, Matiere $matiere)
     {
         $etudiant = auth()->user()->etudiant;
@@ -74,6 +86,7 @@ class EvaluationController extends Controller
 
         $periodeActive = PeriodeEvaluation::where('est_active', true)->first();
 
+        // Création de l'en-tête d'évaluation
         $evaluation = Evaluation::create([
             'etudiant_id' => $etudiant->id,
             'enseignant_id' => $enseignant->id,
@@ -82,6 +95,7 @@ class EvaluationController extends Controller
             'commentaire_general' => $request->commentaire_general,
         ]);
 
+        // Création des notes pour chaque critère sélectionné
         foreach ($request->notes as $critereId => $note) {
             Note::create([
                 'evaluation_id' => $evaluation->id,
@@ -95,6 +109,9 @@ class EvaluationController extends Controller
             ->with('success', 'Évaluation enregistrée avec succès. Merci pour votre participation !');
     }
 
+    /**
+     * Historique paginé des évaluations réalisées par l'étudiant.
+     */
     public function historique()
     {
         $etudiant = auth()->user()->etudiant;
