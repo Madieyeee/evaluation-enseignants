@@ -2,7 +2,16 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-sm font-medium text-muted">Departements</h2>
-            <x-ui.button as="a" href="{{ route('admin.departements.create') }}" variant="primary" size="sm" icon="plus">Nouveau departement</x-ui.button>
+            <x-ui.button
+                as="a"
+                href="{{ route('admin.departements.create') }}"
+                variant="primary"
+                size="sm"
+                icon="plus"
+                class="ml-4"
+            >
+                Nouveau departement
+            </x-ui.button>
         </div>
     </x-slot>
     <div class="space-y-6">

@@ -2,7 +2,14 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="text-sm font-medium text-muted">Criteres d'evaluation</h2>
-            <x-ui.button as="a" href="{{ route('admin.criteres.create') }}" variant="primary" size="sm" icon="plus">
+            <x-ui.button
+                as="a"
+                href="{{ route('admin.criteres.create') }}"
+                variant="primary"
+                size="sm"
+                icon="plus"
+                class="ml-4"
+            >
                 Nouveau critere
             </x-ui.button>
         </div>
